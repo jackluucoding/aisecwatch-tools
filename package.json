@@ -1,0 +1,36 @@
+{
+  "name": "aisecwatch-stack-check",
+  "version": "0.2.0",
+  "description": "Check a project's AI dependencies: version-exact advisories, LLM SDKs, agent frameworks and MCP components, inherited exposure and the host authority they reach.",
+  "type": "module",
+  "bin": {
+    "stack-check": "bin/stack-check.mjs"
+  },
+  "files": [
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "security",
+    "ai",
+    "llm",
+    "mcp",
+    "vulnerability",
+    "sca",
+    "sarif",
+    "supply-chain"
+  ],
+  "homepage": "https://aisecwatch.com/check",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackluucoding/aisecwatch-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jackluucoding/aisecwatch-tools/issues"
+  },
+  "license": "SEE LICENSE IN LICENSE"
+}

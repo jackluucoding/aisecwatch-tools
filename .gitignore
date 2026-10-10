@@ -1,0 +1,4 @@
+node_modules/
+*.sarif
+*.cdx.json
+stack-check.json

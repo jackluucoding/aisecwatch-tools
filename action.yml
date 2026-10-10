@@ -1,0 +1,60 @@
+name: "AI Sec Watch Stack Check"
+description: "Check a repository's AI dependencies: version-exact advisories, LLM components, inherited exposure and the authority they reach."
+author: "AI Sec Watch"
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  files:
+    description: "Space-separated manifests or lockfiles to check. Default: lockfiles found in the working directory."
+    required: false
+    default: ""
+  fail-on:
+    description: "Fail the step when an advisory at or above this severity is found: critical, high, medium, low or none."
+    required: false
+    default: "high"
+  sarif:
+    description: "Path for a SARIF file, for upload with github/codeql-action/upload-sarif. Empty to skip."
+    required: false
+    default: "stack-check.sarif"
+  cyclonedx:
+    description: "Path for a CycloneDX 1.6 AI-BOM of the AI components, inherited exposure and vulnerabilities. Empty to skip."
+    required: false
+    default: ""
+  osv:
+    description: "Look up vulnerabilities in OSV. Sends package names and pinned versions to osv.dev."
+    required: false
+    default: "true"
+  api-url:
+    description: "Stack Check API base URL."
+    required: false
+    default: "https://aisecwatch.com"
+
+outputs:
+  sarif:
+    description: "Path of the SARIF file written."
+    value: ${{ inputs.sarif }}
+  cyclonedx:
+    description: "Path of the AI-BOM written, when requested."
+    value: ${{ inputs.cyclonedx }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Stack Check
+      shell: bash
+      env:
+        INPUT_FILES: ${{ inputs.files }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_SARIF: ${{ inputs.sarif }}
+        INPUT_CYCLONEDX: ${{ inputs.cyclonedx }}
+        INPUT_OSV: ${{ inputs.osv }}
+        INPUT_API: ${{ inputs.api-url }}
+      run: |
+        args=(--fail-on "$INPUT_FAIL_ON" --api "$INPUT_API" --markdown "$GITHUB_STEP_SUMMARY")
+        if [ -n "$INPUT_SARIF" ]; then args+=(--sarif "$INPUT_SARIF"); fi
+        if [ -n "$INPUT_CYCLONEDX" ]; then args+=(--cyclonedx "$INPUT_CYCLONEDX"); fi
+        if [ "$INPUT_OSV" = "false" ]; then args+=(--no-osv); fi
+        # shellcheck disable=SC2086
+        node "$GITHUB_ACTION_PATH/bin/stack-check.mjs" $INPUT_FILES "${args[@]}"
